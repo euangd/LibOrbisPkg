@@ -1,20 +1,27 @@
-name: build project
+name: Test project
 
 on:
   push:
-    branches:
-    - main
-    - feature/* 
-    - master
-    
-  workflow_dispatch:
-  
-jobs:
-  test:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
 
+jobs:
+  build:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: Run tests
-      run: dotnet build OrbisPkg/OrbisPkg.sln
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.x'
+    - name: Restore dependencies
+      run: dotnet restore OrbisPKG/OrbisPKG.sln
+    - name: Build
+      run: dotnet build OrbisPKG/OrbisPKG.sln
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: '**/bin/Release/**'
